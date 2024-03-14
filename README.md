@@ -5,9 +5,11 @@
 [![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) -->
 
 
+[[`🌏 Webpage`](http://aditya.bhatts.org/CrossQ/)] [[`📕 Paper`](https://openreview.net/pdf?id=PczQtTsTIX)] [[`💬 ICLR 2024 OpenReview`](https://openreview.net/forum?id=PczQtTsTIX)]
+
 # **CrossQ**: Batch Normalization in Deep Reinforcement Learning for Greater Sample Efficiency and Simplicity
 
-[**Bhatt A.\*, Palenicek D.\*, Belousov B., Argus M., Amiranashvili A., Brox T., Peters J. (2023). CrossQ: Batch Normalization in Deep Reinforcement Learning for Greater Sample Efficiency and Simplicity.**](https://arxiv.org/abs/1902.05605)
+**Bhatt A.\*, Palenicek D.\*, Belousov B., Argus M., Amiranashvili A., Brox T., Peters J. (ICLR 2024)**
 
 
 This repository contains the official code release for CrossQ.
