@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="CrossQ: Batch Normalization in Deep Reinforcement Learning for Greater Sample Efficiency and Simplicity">
+  <meta name="keywords" content="CrossQ, BatchNorm, CrossNorm, Deep RL, Target Networks">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CrossQ: Batch Normalization in Deep Reinforcement Learning for Greater Sample Efficiency and Simplicity</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-B37BFDTB3H"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-B37BFDTB3H');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro|Source+Code+Pro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <!-- <link rel="stylesheet" href="./static/css/fontawesome.all.min.css"> -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <!-- <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script> -->
+  <!-- <script src="./static/js/index.js"></script> -->
+</head>
+<body>
+
+<!-- <nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="/">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+
+      <!-- <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://aditya.bhatts.org/sensorless-in-hand-manipulation">
+            Surprisingly Robust In-Hand Manipulation
+          </a>
+          <a class="navbar-item" href="https://nerfies.github.io">
+            CrossQ:
+          </a>
+          <a class="navbar-item" href="https://latentfusion.github.io">
+            LatentFusion
+          </a>
+          <a class="navbar-item" href="https://photoshape.github.io">
+            PhotoShape
+          </a>
+        </div>
+      </div>
+    </div> 
+
+  </div>
+</nav> -->
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <div class="is-size-5 publication-authors">
+            <span class="author-block spotlight">iclr 2024 • <span style="font-weight: bold; color: orange !important;">top 5%</span> • spotlight </span>
+          </div>
+          <h1 class="title is-size-3 publication-title"><crossq>CrossQ:</crossq> <br/>Batch Normalization in Deep Reinforcement Learning <br/>for Greater Sample Efficiency and Simplicity</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://aditya.bhatts.org">Aditya Bhatt</a><sup>* 1,4</sup></span>
+            <span class="author-block">
+              <a href="https://www.ias.informatik.tu-darmstadt.de/Team/DanielPalenicek">Daniel Palenicek</a><sup>* 1,2</sup></span>
+            <span class="author-block">
+              <a href="http://www.boris-belousov.net">Boris Belousov</a><sup>1,4</sup>
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.de/citations?user=19Ouf5MAAAAJ">Max Argus</a><sup>3</sup>
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.de/citations?user=BgYdP1sAAAAJ">Artemij Amiranashvili</a><sup>3</sup>
+            </span><br>
+            <span class="author-block">
+              <a href="http://lmb.informatik.uni-freiburg.de/people/brox/index.en.html">Thomas Brox</a><sup>3</sup>
+            </span>
+            <span class="author-block">
+              <a href="http://www.jan-peters.net/">Jan Peters</a><sup>1,2,4,5</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors publication-affiliation">
+            <span class="author-block"><sup>*</sup>Equal contribution</span>
+            <span class="author-block"><sup>1</sup>Intelligent Autonomous Systems, TU Darmstadt</span>
+            <span class="author-block"><sup>2</sup>Hessian.AI</span>
+            <span class="author-block"><sup>3</sup>University of Freiburg</span>
+            <span class="author-block"><sup>4</sup>German Research Center for AI (DFKI) </span>
+            <span class="author-block"><sup>2</sup>Centre for Cognitive Science, TU Darmstadt</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://openreview.net/pdf?id=PczQtTsTIX"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- <span class="link-block">
+                <a href="https://arxiv.org/abs/2011.12948"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span> -->
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href="talk_recording_goes_here"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/adityab/CrossQ"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+            <p>
+            <em>Sample efficiency is a crucial problem in deep reinforcement learning.</em> Recent algorithms, 
+            such as REDQ and DroQ, found a way to improve the sample efficiency
+            by increasing the update-to-data (UTD) ratio to 20 gradient update steps on the
+            critic per environment sample. However, this comes at the expense of a greatly
+            increased computational cost.
+            </p>
+            <p>To reduce this computational burden, we introduce
+            <crossq>CrossQ</crossq>: a lightweight algorithm for continuous control tasks that makes careful
+            use of <em>Batch Normalization</em> and <em>removes target networks</em> to surpass the
+            current state-of-the-art in sample efficiency, while maintaining a <em>low UTD ratio
+            of 1</em>. Notably, <crossq>CrossQ</crossq> does not rely on advanced bias-reduction schemes used in
+            current methods.
+            </p>
+            <p><crossq>CrossQ</crossq>’s contributions are threefold:
+            <ol>
+              <li>it matches or surpasses current state-of-the-art methods in terms of <em>sample efficiency</em>,</li>
+              <li>it <em>substantially reduces the computational cost</em> compared to REDQ and DroQ,</li>
+              <li>it is easy to implement, requiring <em>just a few lines of code</em> on top of SAC.</li>
+            </ol>
+            </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <img src="./static/images/efficiency_sample_compute.png"/>
+        <!-- <img src="./static/images/efficiency_wallclock.png"/> -->
+      </div>
+    </div>
+  </div>
+
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">TL;DR</h2>
+        <div class="content has-text-justified">
+            <h3 class="title is-4">Problem</h3>
+            We want <em>fast + simple + sample-efficient</em> off-policy Deep RL.
+            <ul>
+              <li>
+                UTD=1 methods — like SAC and TD3 — are fast, but <em>not sample-efficient enough</em>
+              </li>
+              <li>
+                UTD=20 methods — like REDQ and DroQ — are sample-efficient, but <em>not fast enough</em>
+              </li>
+              <li>
+                High-UTD training <em>requires Q-function bias reduction</em>, making algorithms more complex
+              </li>
+            </ul>
+            Can we accelerate training without resorting to high UTD ratios?
+            
+            <h3 class="title is-4">Insight</h3>
+            BatchNorm greatly accelerates convergence in Supervised Learning. <em>Can it similarly accelerate RL?</em><br/>
+            We show that <em>naively using BatchNorm with Q networks</em> is harmful:
+            <ul>
+              <li>
+                TD learning relates Q predictions from the forward passes of <em>two batches — (S, A) and (S', A')</em>
+              </li>
+              <li>
+                Both batches in TD have <em>different statistics</em>: <em>A</em> comes from the replay, <em>A'</em> comes from the policy
+              </li>
+              <li>
+                BatchNorm's <em>mismatched running statistics</em> degrade Q predictions and harm training
+              </li>
+            </ul>
+            <h3 class="title is-4">Solution</h3>
+            <ol>
+              <li>
+                Delete the <em>target network</em>
+              </li>
+              <li>
+                Concatenate the batches <em>(S, A)</em> and <em>(S', A')</em> into one, and do a <em>single forward pass</em>
+              </li>
+            </ol>
+            <p>
+            BatchNorm now uses normalization moments from the union of both batches. These moments are not mismatched, as <em>all inputs now belong to the same mixture distribution</em>. 
+            </p>
+            <img class='paper-img' src="./static/images/before_after.png"/>
+            
+            <h3 class="title is-4"><crossq>CrossQ</crossq></h3>
+            To turn SAC into <crossq>CrossQ</crossq>, we make <em>3 key changes</em>:
+            <ol>
+              <li><em>Delete target nets</em>, simplifying the algorithm</li>
+              <li><em>Use batch normalization</em>, boosting sample-efficiency by an order of magnitude</li>
+              <li><em>Widen the critic</em>, further improving performance</li>
+            </ol>
+            <p>
+            These changes take only a few lines of code.
+            </p>
+            <img class='paper-img' src="./static/images/efficiency_sample.png"/>
+            
+            
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+
+
+<section class="section" id="Cite">
+  <div class="container is-max-desktop content">
+    <h2>Try</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <img class="paper-img" src="./static/images/jax_code.png"/>
+      </div>
+    </div>
+    <h2>Read</h2>
+    <a href="https://openreview.net/pdf?id=PczQtTsTIX">
+      <ol class="paper-strip">
+        <li><img src="./static/images/paperimg/paperimg-01.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-02.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-03.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-04.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-05.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-06.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-07.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-08.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-09.png" /> </li>
+        <!-- <br/>
+
+        <li><img src="./static/images/paperimg/paperimg-10.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-11.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-12.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-13.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-14.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-15.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-16.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-17.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-18.png" /> </li>
+        <li><img src="./static/images/paperimg/paperimg-19.png" /> </li> -->
+      </ol>
+    </a>
+    <h2>Cite</h2>
+    <pre><code>
+@inproceedings{
+  <b>bhatt2024crossq</b>,
+  title={CrossQ: Batch Normalization in Deep Reinforcement Learning for Greater Sample Efficiency and Simplicity},
+  author={Aditya Bhatt and Daniel Palenicek and Boris Belousov and Max Argus and Artemij Amiranashvili and Thomas Brox and Jan Peters},
+  booktitle={The Twelfth International Conference on Learning Representations},
+  year={2024},
+  url={https://openreview.net/forum?id=PczQtTsTIX}
+}
+    </code></pre>
+
+    A <b>2019 arXiv version</b> of this paper was titled <a href="https://arxiv.org/abs/1902.05605v2">CrossNorm: Normalization for Off-Policy TD Reinforcement Learning</a>.
+  </div>
+</section>
+
+
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p style="text-align: center;">
+            design adapted from <a
+              href="https://github.com/nerfies/nerfies.github.io">nerfies.github.io</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
