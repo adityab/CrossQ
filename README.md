@@ -43,7 +43,7 @@ To train **without WandB logging**, run the following command, and in a differen
 python train.py -algo crossq -env Humanoid-v4 -seed 9 -wandb_mode 'disabled'
 ```
 
-To train **on a cluster**, we provide examples of slurm scripts in `/slurm` to run various experiments, basedlines and ablations performed in the paper on a slurm cluster.
+To train **on a cluster**, we provide examples of slurm scripts in `/slurm` to run various experiments, baselines and ablations performed in the paper on a slurm cluster.
 These configurations are very cluster specific and probably need to be adjusted for your specific cluster. However, they should surve as a starting point.
 
 <p align="center">
