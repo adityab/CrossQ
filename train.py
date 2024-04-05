@@ -34,6 +34,7 @@ parser.add_argument("-algo",        type=str, required=False, default='sac', cho
 parser.add_argument("-seed",        type=int, required=False, default=1, help="Set Seed.")
 parser.add_argument("-log_freq",    type=int, required=False, default=300, help="how many times to log during training")
 
+parser.add_argument('-wandb_entity', type=str, required=False, default=None, help='your wandb entity name')
 parser.add_argument('-wandb_project', type=str, required=False, default='crossQ', help='wandb project name')
 parser.add_argument("-wandb_mode",    type=str, required=False, default='disabled', choices=['disabled', 'online'], help="enable/disable wandb logging")
 parser.add_argument("-eval_qbias",    type=int, required=False, default=0, choices=[0,1], help="enable/diasble q bias evaluation (expensive)")
@@ -143,7 +144,7 @@ args_dict.update({
 })
 
 with wandb.init(
-    entity='your_entity',
+    entity=args.wandb_entity,
     project=args.wandb_project,
     name=f"seed={seed}",
     group=group,

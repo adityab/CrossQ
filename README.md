@@ -26,17 +26,16 @@ conda create -n crossq python=3.11.5
 conda activate crossq
 conda install -c nvidia cuda-nvcc=12.3.52
 
-# conda install python=3.11.5
-python -m pip install -e .
-python -m pip install --upgrade "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+pip install -e .
+pip install "jax[cuda12_pip]==0.4.19" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 ```
 
 ## Running Experiments
 The main entry point for running experiments is `train.py`. You can configure experiments with the appropriate environment and agent flags. For more info run `python train.py --help`.
 
-To train **with WandB logging**, run the following command to train a CrossQ agent on the `Humanoid-v4` environment with seed `9`, which will log the results to your WandB entity and project (set these for yourself in `train.py`):
+To train **with WandB logging**, run the following command to train a CrossQ agent on the `Humanoid-v4` environment with seed `9`, which will log the results to your WandB entity and project:
 ```bash
-python train.py -algo crossq -env Humanoid-v4 -seed 9 -wandb_mode 'online'
+python train.py -algo crossq -env Humanoid-v4 -seed 9 -wandb_mode 'online' -wandb_entity my_team -wandb_project crossq
 ```
 To train **without WandB logging**, run the following command, and in a different terminal run `tensorboard --logdir logs` to visualize training progress:
 ```bash
