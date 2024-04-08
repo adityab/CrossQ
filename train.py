@@ -130,6 +130,7 @@ elif args.algo == 'crossq':
     args.utd = 1                    # nice
     net_arch["qf"] = [2048, 2048]   # wider critics
     args.bn = True                  # use batch norm
+    args.bn_momentum = 0.99
     args.crossq_style = True        # with a joint forward pass
     args.tau = 1.0                  # without target networks
     group = f'CrossQ_{args.env}'
