@@ -376,7 +376,7 @@ class SACPolicy(BaseJaxPolicy):
         if td3_mode:
             self._predict = self._predict_deterministic
 
-    def build(self, key: jax.random.KeyArray, lr_schedule: Schedule, qf_learning_rate: float) -> jax.random.KeyArray:
+    def build(self, key: List[jax.random.key], lr_schedule: Schedule, qf_learning_rate: float) -> List[jax.random.key]:
         key, actor_key, qf_key, dropout_key, bn_key = jax.random.split(key, 5)
         # Keep a key for the actor
         key, self.key = jax.random.split(key, 2)

@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Any, ClassVar, Dict, Optional, Tuple, Type, Union
+from typing import Any, ClassVar, Dict, Optional, Tuple, Type, Union, List
 
 import flax
 import flax.linen as nn
@@ -261,7 +261,7 @@ class SAC(OffPolicyAlgorithmJax):
         next_observations: np.ndarray,
         rewards: np.ndarray,
         dones: np.ndarray,
-        key: jax.random.KeyArray,
+        key: List[jax.random.key],
     ):
         key, noise_key, dropout_key_target, dropout_key_current, redq_key = jax.random.split(key, 5)
         # sample action from the actor
@@ -357,7 +357,7 @@ class SAC(OffPolicyAlgorithmJax):
         qf_state: RLTrainState,
         ent_coef_state: TrainState,
         observations: np.ndarray,
-        key: jax.random.KeyArray,
+        key: List[jax.random.key],
         q_reduce_fn = jnp.min,  # Changes for redq and droq
         td3_mode = False,
     ):

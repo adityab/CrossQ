@@ -29,13 +29,14 @@ os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
 os.environ['WANDB_DIR'] = '/tmp'
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-env",         type=str, required=False, default="HumanoidStandup-v4", help="Set Environment.")
-parser.add_argument("-algo",        type=str, required=True, default='sac', choices=['crossq', 'sac', 'redq', 'droq', 'td3'], help="algorithm to use (essentially a named hyperparameter set for the base SAC algorithm)")
-parser.add_argument("-seed",        type=int, required=False, default=1, help="Set Seed.")
-parser.add_argument("-log_freq",    type=int, required=False, default=300, help="how many times to log during training")
+parser.add_argument("-env",             type=str, required=False, default="HumanoidStandup-v4", help="Set Environment.")
+parser.add_argument("-algo",            type=str, required=True, default='sac', choices=['crossq', 'sac', 'redq', 'droq', 'td3'], help="algorithm to use (essentially a named hyperparameter set for the base SAC algorithm)")
+parser.add_argument("-seed",            type=int, required=False, default=1, help="Set Seed.")
+parser.add_argument("-learning_starts", type=int, required=False, default=5000, help="Numer of random before starting to learn.")
+parser.add_argument("-log_freq",        type=int, required=False, default=300, help="how many times to log during training")
 
-parser.add_argument('-wandb_entity', type=str, required=False, default=None, help='your wandb entity name')
-parser.add_argument('-wandb_project', type=str, required=False, default='crossQ', help='wandb project name')
+parser.add_argument('-wandb_entity',  type=str, required=False, default='ias', help='your wandb entity name')
+parser.add_argument('-wandb_project', type=str, required=False, default='crossQ_dmc', help='wandb project name')
 parser.add_argument("-wandb_mode",    type=str, required=False, default='disabled', choices=['disabled', 'online'], help="enable/disable wandb logging")
 parser.add_argument("-eval_qbias",    type=int, required=False, default=0, choices=[0,1], help="enable/diasble q bias evaluation (expensive; experiments will run much slower)")
 
@@ -73,16 +74,16 @@ net_arch = {'pi': [256, 256], 'qf': [args.n_neurons, args.n_neurons]}
 total_timesteps = int(args.total_timesteps)
 eval_freq = max(5_000_000 // args.log_freq, 1)
 
-if 'dm_control' in args.env:
-    total_timesteps = {
-        'dm_control/reacher-easy'     : 100_000,
-        'dm_control/reacher-hard'     : 100_000,
-        'dm_control/ball_in_cup-catch': 200_000,
-        'dm_control/finger-spin'      : 500_000,
-        'dm_control/fish-swim'        : 5_000_000,
-        'dm_control/humanoid-stand'   : 5_000_000,
-    }[args.env]
-    eval_freq = max(total_timesteps // args.log_freq, 1)
+# if 'dm_control' in args.env:
+#     total_timesteps = {
+#         'dm_control/reacher-easy'     : 100_000,
+#         'dm_control/reacher-hard'     : 100_000,
+#         'dm_control/ball_in_cup-catch': 200_000,
+#         'dm_control/finger-spin'      : 500_000,
+#         'dm_control/fish-swim'        : 5_000_000,
+#         'dm_control/humanoid-stand'   : 5_000_000,
+#     }[args.env]
+#     eval_freq = max(total_timesteps // args.log_freq, 1)
 
 td3_mode = False
 
@@ -163,10 +164,12 @@ with wandb.init(
 
     training_env = gym.make(args.env)
 
-    if args.env == 'dm_control/humanoid-stand':
-        training_env.observation_space['head_height'] = gym.spaces.Box(-np.inf, np.inf, (1,))
-    if args.env == 'dm_control/fish-swim':
-        training_env.observation_space['upright'] = gym.spaces.Box(-np.inf, np.inf, (1,))
+    if args.env.startswith('dm_control/'):
+        for key in training_env.observation_space.spaces.keys():
+            box = training_env.observation_space.spaces[key]
+            if not box.shape:
+                training_env.observation_space.spaces[key] = gym.spaces.Box(box.low[None], box.high[None], (1,))
+            print(key, training_env.observation_space.spaces[key])
 
     import optax
     model = SAC(
@@ -193,7 +196,7 @@ with wandb.init(
         td3_mode=td3_mode,
         use_bnstats_from_live_net=bool(args.bnstats_live_net),
         policy_q_reduce_fn=policy_q_reduce_fn,
-        learning_starts=5000,
+        learning_starts=args.learning_starts,
         learning_rate=args.lr,
         qf_learning_rate=args.lr,
         tau=args.tau,

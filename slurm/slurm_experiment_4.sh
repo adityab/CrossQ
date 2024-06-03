@@ -1,15 +1,15 @@
 #!/bin/bash
 #SBATCH -J CrossQ
-#SBATCH -a 1-3
+#SBATCH -a 1-4
 #SBATCH -n 1
-#SBATCH -c 4
-#SBATCH --mem-per-cpu=7000
+#SBATCH -c 1
+#SBATCH --mem-per-cpu=12000
 #SBATCH -t 72:00:00
 #SBATCH -p gpu
 #SBATCH --gres=gpu:1
-#SBATCH -C 'rtx3090'
-#SBATCH -o /home/palenicek/projects/sbx-crossq/logs/%A_%a.out.log
-#SBATCH -e /home/palenicek/projects/sbx-crossq/logs/%A_%a.err.log
+#SBATCH -C 'rtx3090|a5000|rtx3080'
+#SBATCH -o /home/palenicek/projects/CrossQ/logs/%A_%a.out.log
+#SBATCH -e /home/palenicek/projects/CrossQ/logs/%A_%a.err.log
 ## Make sure to create the logs directory /home/user/Documents/projects/prog/logs, BEFORE launching the jobs.
 
 # Setup Env
@@ -19,7 +19,7 @@ echo $SCRIPT_PATH
 source $SCRIPT_PATH/conda_hook
 echo "Base Conda: $(which conda)"
 eval "$($(which conda) shell.bash hook)"
-conda activate crossq
+conda activate crossq2
 echo "Conda Env:  $(which conda)"
 
 export GTIMER_DISABLE='1'
@@ -29,7 +29,7 @@ cd $SCRIPT_PATH
 echo "Working Directory:  $(pwd)"
 
 
-python /home/palenicek/projects/sbx-crossq/train.py \
+python /home/palenicek/projects/CrossQ/train.py \
     -algo $ALGO \
     -env $ENV \
     -seed $SLURM_ARRAY_TASK_ID \
@@ -47,4 +47,5 @@ python /home/palenicek/projects/sbx-crossq/train.py \
     -bn_momentum $BN_MOM \
     -total_timesteps $STEPS \
     -eval_qbias $EVAL_QBIAS \
+    -learning_starts $START \
     -wandb_mode 'online'
