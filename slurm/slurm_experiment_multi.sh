@@ -19,7 +19,7 @@ echo $SCRIPT_PATH
 source $SCRIPT_PATH/conda_hook
 echo "Base Conda: $(which conda)"
 eval "$($(which conda) shell.bash hook)"
-conda activate crossq
+conda activate crossq2
 echo "Conda Env:  $(which conda)"
 
 export GTIMER_DISABLE='1'
