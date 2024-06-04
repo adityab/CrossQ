@@ -78,7 +78,7 @@ class BatchRenorm(Module):
   scale_init: Callable[[PRNGKey, Shape, Dtype], Array] = initializers.ones
   axis_name: Optional[str] = None
   axis_index_groups: Any = None
-  use_fast_variance: bool = True
+  use_fast_variance: bool = False
 
   @compact
   def __call__(self, x, use_running_average: Optional[bool] = None):
