@@ -172,7 +172,7 @@ class SAC(OffPolicyAlgorithmJax):
             )
 
         # automatically set target entropy if needed
-        self.target_entropy = -np.prod(self.action_space.shape).astype(np.float32)
+        self.target_entropy = 0.5 * -np.prod(self.action_space.shape).astype(np.float32)
 
     def learn(
         self,
