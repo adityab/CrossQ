@@ -122,7 +122,7 @@ elif args.algo == 'sac':
     layer_norm = args.ln
     if args.dropout: 
         dropout_rate = 0.01
-    group = f'SAC_{args.env}_bn({args.bn}/{args.bn_momentum}/{args.bn_mode})_ln{(args.ln)}_xq({args.crossq_style}/{args.tau})_utd({args.utd}/{args.policy_delay})_A{args.adam_b1}_Q({net_arch["qf"][0]})_l{args.lr}_fastV_.5a'
+    group = f'SAC_{args.env}_bn({args.bn}/{args.bn_momentum}/{args.bn_mode})_xq({args.crossq_style}/{args.tau})_utd({args.utd}/{args.policy_delay})_A{args.adam_b1}_Q({net_arch["qf"][0]})_l{args.lr}_st{args.learning_starts}_fV_.5a'
 
 elif args.algo == 'crossq':
     args.adam_b1 = 0.5

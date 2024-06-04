@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -J CrossQ
-#SBATCH -a 1-9
+#SBATCH -a 1-5
 #SBATCH -n 1
 #SBATCH -c 1
 #SBATCH --mem-per-cpu=12000

@@ -1,15 +1,15 @@
 #!/bin/bash
 #SBATCH -J CrossQ
-#SBATCH -a 0-3
+#SBATCH -a 0-1
 #SBATCH -n 1
 #SBATCH -c 4
 #SBATCH --mem-per-cpu=7000
 #SBATCH -t 72:00:00
 #SBATCH -p gpu
 #SBATCH --gres=gpu:1
-#SBATCH -C 'rtx3090'
-#SBATCH -o /home/palenicek/projects/sbx-crossq/logs/%A_%a.out.log
-#SBATCH -e /home/palenicek/projects/sbx-crossq/logs/%A_%a.err.log
+#SBATCH -C 'rtx3090|a5000'
+#SBATCH -o /home/palenicek/projects/CrossQ/logs/%A_%a.out.log
+#SBATCH -e /home/palenicek/projects/CrossQ/logs/%A_%a.err.log
 ## Make sure to create the logs directory /home/user/Documents/projects/prog/logs, BEFORE launching the jobs.
 
 # Setup Env
@@ -28,11 +28,11 @@ echo "GTIMER_DISABLE: $GTIMER_DISABLE"
 cd $SCRIPT_PATH
 echo "Working Directory:  $(pwd)"
 
-seeds_per_task=4 #$SLURM_ARRAY_TASK_COUNT
+seeds_per_task=3 #$SLURM_ARRAY_TASK_COUNT
 s=$SLURM_ARRAY_TASK_ID
 
 for i in $(seq 1 $seeds_per_task); do
-    python /home/palenicek/projects/sbx-crossq/train.py \
+    python /home/palenicek/projects/CrossQ/train.py \
         -algo $ALGO \
         -env $ENV \
         -seed $((s*seeds_per_task + i)) \
@@ -50,6 +50,7 @@ for i in $(seq 1 $seeds_per_task); do
         -bn_momentum $BN_MOM \
         -total_timesteps $STEPS \
         -eval_qbias $EVAL_QBIAS \
+        -learning_starts $START \
         -wandb_mode 'online' &
 done
 
